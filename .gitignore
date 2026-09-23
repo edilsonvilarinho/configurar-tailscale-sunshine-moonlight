@@ -1,0 +1,18 @@
+# Evidências operacionais locais; o plano documenta os resultados sem publicar os arquivos brutos.
+planos/*.log
+planos/*.etl
+planos/*.pktmon.txt
+
+# Backups locais de configuração e arquivos temporários.
+*.backup-*
+*.tmp
+*.temp
+*.secret
+*.password
+*.credentials
+
+# Arquivos comuns de ambiente/editor.
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
