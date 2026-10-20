@@ -12,10 +12,12 @@ com o Sunshine alcançável **somente pela tailnet**, sem port forwarding e sem 
 ## Topologia
 
 - Host novo: `bazzite` — Bazzite 44.20261012.1 Kinoite, imagem `bazzite-nvidia-open`, KDE Wayland,
-  RTX 4070 SUPER (driver 615.78.08), IP de LAN `192.168.0.3`.
-- Host antigo: `sammysan` (Windows 11), IP de tailnet `100.78.107.32` — **obsoleto** se a máquina foi
-  reinstalada; o nó Bazzite entra na tailnet com IP próprio.
-- Cliente: `NOTE-LAT-012` (Windows), já com Tailscale e Moonlight do guia anterior.
+  RTX 4070 SUPER (driver 615.78.08), IP de LAN `192.168.0.3`, **IP de tailnet `100.89.62.103`**.
+- Host antigo: `sammysan` (Windows 11), `100.78.107.32` — **continua na tailnet** (visto online há
+  poucas horas em 2026-10-20), aparentemente dual boot na mesma máquina. Os dois nós nunca ficam
+  online ao mesmo tempo; o IP válido para o Bazzite é o novo.
+- Clientes na tailnet: `note-lat-012` (Windows, `100.114.232.6`), `iphone-12-pro-max`
+  (`100.120.43.7`), `redmi-pad-se`, `realme-c61`.
 
 ## Medição do host em 2026-10-20 (somente leitura)
 
@@ -97,12 +99,17 @@ todo cliente precisa refazer o PIN, inclusive o `NOTE-LAT-012`.
 | 3 | Pesquisar a documentação oficial de Bazzite, Sunshine e Tailscale | leitura de `docs.bazzite.gg`, `docs.lizardbyte.dev`, issues do Tailscale e das receitas `ujust` locais (`/usr/share/ublue-os/just/82-bazzite-sunshine.just`, `80-bazzite.just`) | Feito; decisões 1 a 7 |
 | 4 | Escrever o guia HTML de instalação | — | Feito: `guias/bazzite-host-tailscale-sunshine.html` |
 | 5 | Escrever os scripts de apoio | `bash -n` nos dois; dry-run do script de firewall | Feito; o dry-run detectou `enp5s0` / conexão `Conexão cabeada 1` e listou as mudanças sem aplicar |
-| 6 | Habilitar `tailscaled` e autenticar | `ujust tailscale enable` + `sudo tailscale up --operator="$USER"` | **Pendente** — exige senha de `sudo` e aprovação no navegador |
-| 7 | Instalar o Sunshine e permissões de captura | `ujust setup-sunshine` | **Pendente** — exige senha e interação com o portal do KDE |
-| 8 | Credenciais, `wan` e `csrf_allowed_origins` | ver guia, etapas 6 e 7 | **Pendente** |
-| 9 | Restringir a LAN | `bash scripts/bazzite-host-firewall-tailnet.sh --apply` | **Pendente** |
-| 10 | Autologin, suspensão e linger | ver guia, etapa 9 | **Pendente** |
-| 11 | Parear o cliente e validar a sessão | ver guia, etapas 10 e 11 | **Pendente** |
+| 6 | Habilitar `tailscaled` e autenticar | serviço ligado pelo Bazzite Portal (*Manage Bazzite → Enable Tailscale*); `sudo tailscale up --operator=edi` | Feito em 2026-10-20: host recebeu `100.89.62.103` |
+| 7 | Instalar o Sunshine | `flatpak install --system flathub dev.lizardbyte.app.Sunshine` + `additional-install.sh` + `systemctl --user enable --now app-dev.lizardbyte.app.Sunshine` | Feito: versão 2026.914.233613, serviço `enabled/active`, TCP 47984/47989/47990/48010 escutando |
+| 8 | `origin_web_ui_allowed`, `upnp`, `csrf_allowed_origins` | `scripts/etapa3` (ver guia, etapa 7), com backup de `sunshine.conf` | Feito: `wan`, `disabled`, `https://100.89.62.103:47990` |
+| 9 | Restringir a LAN | `bash scripts/bazzite-host-firewall-tailnet.sh --apply` | Feito: zona `lan-restrito` em `enp5s0` (só `dhcpv6-client` e `mdns`); `tailscale0` ficou *no zone* ⇒ zona padrão; interface seguiu de pé |
+| 10 | Credenciais da Web UI | `flatpak run --command=sunshine dev.lizardbyte.app.Sunshine --creds admin '<senha>'` | Feito: usuário `admin`. **A senha escolhida é fraca e igual à do sistema — trocar** |
+| 11 | Monitor capturado | `output_name = DP-1` em `sunshine.conf` | Feito: antes pegava o primeiro stream (DP-2, 2560x1440); agora `Streaming display 'DP-1' resolution: 3440x1440` |
+| 12 | Aplicações | entrada "Steam Big Picture" em `apps.json` com `flatpak-spawn --host setsid steam steam://open/bigpicture` | Feito: API lista `Desktop` e `Steam Big Picture` |
+| 13 | Suspensão e linger | `systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target`; `loginctl enable-linger edi` | Feito |
+| 14 | Autologin | `/etc/sddm.conf.d/10-autologin.conf` com `User=edi`, `Session=plasma.desktop` | Feito a pedido do usuário; compromisso de segurança física aceito |
+| 15 | Validar a Web UI pelo IP da tailnet | `curl -sk https://100.89.62.103:47990/` e com `-u admin:<senha>` | Feito: `401` sem credencial, `200` com credencial, API lista as duas aplicações |
+| 16 | Parear um cliente e validar a sessão | ver guia, etapas 10 e 11 | **Pendente** — nenhum cliente estava online na tailnet no momento da execução |
 
 ## Regras de segurança do procedimento
 
@@ -110,3 +117,20 @@ todo cliente precisa refazer o PIN, inclusive o `NOTE-LAT-012`.
 - Nenhum port forwarding, nenhuma porta pública, firewall nunca desativado como "solução".
 - Backup de `sunshine.conf` antes de qualquer edição.
 - Ampliar o acesso dentro da tailnet é decisão explícita (ACL do Tailscale), não efeito colateral.
+
+## Observações da execução (2026-10-20)
+
+- **`pkexec` não serve para este fluxo.** Rodado a partir do shell do agente, o polkit responde
+  `Not authorized` sem abrir diálogo, porque o processo não está atrelado ao agente de autenticação
+  da sessão KDE. O que funcionou foi abrir um `konsole` na sessão do usuário (`setsid konsole -e bash <script>`)
+  e deixar o `sudo` pedir a senha lá, numa janela de verdade.
+- **O log do Sunshine mente sobre a gravidade.** `Failed to gain CAP_SYS_ADMIN` aparece quatro vezes
+  no arranque e é inofensivo — é a sonda de captura KMS falhando no Flatpak; o próprio log encerra o
+  bloco com `// Ignore any errors mentioned above, they are not relevant. //`. A captura real sai por
+  PipeWire/portal e os encoders NVENC (H.264, HEVC, AV1) foram todos encontrados.
+- **Sem `output_name`, o Sunshine pega "o primeiro stream disponível"**, não o monitor principal.
+  Em máquina com duas telas isso é silencioso: nada falha, só chega a tela errada no cliente.
+- **A Web UI não precisou ser aberta no cliente para parear**: o PIN pode ser enviado por
+  `POST /api/pin` com as credenciais, o que evita o passo mais frágil do procedimento do Windows
+  (o erro de CSRF). A configuração de `csrf_allowed_origins` foi mantida porque a Web UI pelo
+  navegador continua sendo o caminho normal.

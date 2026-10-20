@@ -91,6 +91,7 @@
     <li><a href="#cliente">Configurar o cliente Moonlight</a></li>
     <li><a href="#validacao">Validação final</a></li>
     <li><a href="#diagnostico">Diagnóstico</a></li>
+    <li><a href="#registro">Registro da execução</a></li>
     <li><a href="#referencias">Referências</a></li>
   </ol>
 </nav>
@@ -182,6 +183,7 @@ Sunshine e Moonlight <b>não instalados</b>, <code>firewalld</code> ativo com zo
 
 <pre><code>ujust tailscale enable
 # equivalente: sudo systemctl enable --now tailscaled.service</code></pre>
+<p>Pela interface dá no mesmo: <b>Bazzite Portal → Manage Bazzite → Enable Tailscale</b>. Foi esse o caminho usado na execução de 2026-10-20.</p>
 
 <p>Autentique na <b>mesma tailnet</b> do cliente. O <code>--operator</code> evita precisar de <code>sudo</code> para todo comando <code>tailscale</code> depois:</p>
 
@@ -248,7 +250,11 @@ echo 'KWIN_WAYLAND_NO_PERMISSION_CHECKS=1' > ~/.config/environment.d/98-kwin-no-
 </div>
 
 <h3>Dois monitores</h3>
-<p>Esta máquina tem duas telas (2560×1440 e 3440×1440). O Sunshine captura <b>uma</b> saída. Escolha qual em <i>Configuration → Audio/Video → Display</i>; caso contrário ele pega a primeira e o cliente recebe a tela errada. Se quiser uma resolução própria para o cliente, sem depender de um monitor físico, use o monitor virtual:</p>
+<p>Esta máquina tem duas telas (2560×1440 e 3440×1440). O Sunshine captura <b>uma</b> saída. Sem escolher, o log diz <code>Using first available stream as no matching stream was found for: ''</code> e o cliente recebe a tela errada — nada falha, o erro é silencioso. Escolha em <i>Configuration → Audio/Video → Display</i> ou direto no arquivo, pelo nome que o log mostra em <code>[wayland] Name:</code>:</p>
+<pre><code>echo 'output_name = DP-1' &gt;&gt; ~/.var/app/dev.lizardbyte.app.Sunshine/config/sunshine/sunshine.conf
+systemctl --user restart app-dev.lizardbyte.app.Sunshine
+grep 'Streaming display' ~/.var/app/dev.lizardbyte.app.Sunshine/config/sunshine/sunshine.log | tail -1</code></pre>
+<p> Se quiser uma resolução própria para o cliente, sem depender de um monitor físico, use o monitor virtual:</p>
 <pre><code>ujust setup-sunshine virtual-monitor   # → Add Virtual Monitor</code></pre>
 <p>Isso adiciona uma aplicação "Virtual Monitor" no Sunshine que cria e destrói uma saída KWin por sessão. Só funciona em KWin (Kinoite — é o caso aqui) e exige o método de captura <b>KWin Screencast</b>.</p>
 </section>
@@ -403,6 +409,14 @@ Test-NetConnection &lt;ip-100.x-do-bazzite&gt; -Port 47990</code></pre></li>
   <li>O Moonlight mostra um PIN. Abra <code>https://&lt;ip-100.x&gt;:47990</code>, aba <b>PIN</b>, informe o código e nomeie o dispositivo.</li>
 </ol>
 
+<div class="box ok">
+<b class="lbl">Atalho: enviar o PIN pela API, do próprio host</b>
+<p style="margin:.3rem 0 .6rem">Evita abrir a Web UI no cliente — e com isso evita o erro de CSRF que travou o procedimento no Windows:</p>
+<pre><code>curl -sk -u admin:'&lt;senha&gt;' -X POST https://localhost:47990/api/pin \
+  -d '{"pin":"1234","name":"iphone"}'
+# resposta esperada: {"status":"true"}</code></pre>
+</div>
+
 <p>Para um cliente Linux (inclusive outro Bazzite): <code>flatpak install flathub com.moonlight_stream.Moonlight</code>. Para tablet/celular, o Moonlight das lojas + Tailscale na mesma conta. Em qualquer caso, o pareamento é por PIN e precisa ser refeito por dispositivo.</p>
 
 <div class="box">
@@ -453,6 +467,35 @@ firewall-cmd --list-all-zones | sed -n '1,120p'
 tailscale status --json | head -n 40
 sudo tcpdump -ni tailscale0 'port 47990 or port 48010' -c 20</code></pre>
 <p class="cmdnote">Nunca cole senha, token ou PIN em log, issue ou neste repositório.</p>
+</section>
+
+<section id="registro">
+<h2><span class="n">—</span>Registro da execução de 2026-10-20</h2>
+<p>Valores reais desta instalação, para não precisar procurar depois:</p>
+<div class="tablewrap">
+<table>
+<tbody>
+<tr><th>Host na tailnet</th><td><code>bazzite</code> — <code>100.89.62.103</code> (LAN <code>192.168.0.3</code>)</td></tr>
+<tr><th>Web UI</th><td><code>https://100.89.62.103:47990</code>, usuário <code>admin</code></td></tr>
+<tr><th>Sunshine</th><td>Flatpak <code>dev.lizardbyte.app.Sunshine</code> 2026.914.233613, serviço de usuário ativo</td></tr>
+<tr><th>Encoders</th><td>NVENC H.264, HEVC e AV1 (AV1 sem 4:4:4, normal)</td></tr>
+<tr><th>Captura</th><td>PipeWire/portal, <code>output_name = DP-1</code> → 3440×1440</td></tr>
+<tr><th>Aplicações</th><td><code>Desktop</code> e <code>Steam Big Picture</code></td></tr>
+<tr><th>Firewall</th><td><code>enp5s0</code> na zona <code>lan-restrito</code>; <code>tailscale0</code> sem zona (cai na padrão)</td></tr>
+<tr><th>Host sempre pronto</th><td>autologin de <code>edi</code>, <code>sleep/suspend/hibernate</code> mascarados, linger ligado</td></tr>
+<tr><th>Nó Windows antigo</th><td><code>sammysan</code> / <code>100.78.107.32</code> continua na tailnet (dual boot); nunca online junto com o Bazzite</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+<b class="lbl">Três armadilhas encontradas na execução</b>
+<ul style="margin:.4rem 0 0;padding-left:1.1rem">
+<li><b><code>pkexec</code> não funciona a partir de um shell automatizado</b>: o polkit responde <code>Not authorized</code> sem abrir diálogo, porque o processo não está atrelado ao agente da sessão KDE. O que funciona é abrir um terminal na sessão (<code>setsid konsole -e bash &lt;script&gt;</code>) e deixar o <code>sudo</code> pedir a senha lá.</li>
+<li><b><code>Failed to gain CAP_SYS_ADMIN</code> no log é ruído</b>: é a sonda de captura KMS falhando no Flatpak. O próprio Sunshine fecha o bloco com <i>"Ignore any errors mentioned above"</i>.</li>
+<li><b>Sem <code>output_name</code>, o monitor capturado é sorteado</b> pela ordem dos streams, não pelo monitor principal.</li>
+</ul>
+</div>
 </section>
 
 <section id="referencias">

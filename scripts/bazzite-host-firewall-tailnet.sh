@@ -28,6 +28,10 @@ case "${1:-}" in
   *) echo "Uso: $0 [--apply|--revert|--dry-run]" >&2; exit 2 ;;
 esac
 
+# Com SUDO_ASKPASS definido, usa -A para nao depender de terminal interativo.
+SUDO=(sudo)
+[[ -n "${SUDO_ASKPASS:-}" ]] && SUDO=(sudo -A)
+
 run() {
   if [[ "$MODE" == "dry-run" ]]; then
     printf '  [dry-run] %s\n' "$*"
@@ -66,10 +70,10 @@ if [[ "$MODE" == "revert" ]]; then
   for iface in "${LAN_IFACES[@]}"; do
     conn="$(nm_connection_for "$iface")"
     if [[ -n "$conn" ]]; then
-      run sudo nmcli connection modify "$conn" connection.zone ""
-      run sudo nmcli connection up "$conn"
+      run "${SUDO[@]}" nmcli connection modify "$conn" connection.zone ""
+      run "${SUDO[@]}" nmcli connection up "$conn"
     else
-      run sudo firewall-cmd --zone="$ZONE" --remove-interface="$iface"
+      run "${SUDO[@]}" firewall-cmd --zone="$ZONE" --remove-interface="$iface"
     fi
   done
   echo
@@ -84,7 +88,7 @@ echo "1) Zona restrita"
 if firewall-cmd --get-zones 2>/dev/null | tr ' ' '\n' | grep -qx "$ZONE"; then
   echo "  (a zona '$ZONE' ja existe)"
 else
-  run sudo firewall-cmd --permanent --new-zone="$ZONE"
+  run "${SUDO[@]}" firewall-cmd --permanent --new-zone="$ZONE"
 fi
 
 # Servicos minimos para a rede local continuar utilizavel.
@@ -98,16 +102,16 @@ fi
 SERVICES+=(${EXTRA_SERVICES:-})
 
 for svc in "${SERVICES[@]}"; do
-  [[ -n "$svc" ]] && run sudo firewall-cmd --permanent --zone="$ZONE" --add-service="$svc"
+  [[ -n "$svc" ]] && run "${SUDO[@]}" firewall-cmd --permanent --zone="$ZONE" --add-service="$svc"
 done
 
 # shellcheck disable=SC2206
 PORTS=(${EXTRA_PORTS:-})
 for port in "${PORTS[@]}"; do
-  [[ -n "$port" ]] && run sudo firewall-cmd --permanent --zone="$ZONE" --add-port="$port"
+  [[ -n "$port" ]] && run "${SUDO[@]}" firewall-cmd --permanent --zone="$ZONE" --add-port="$port"
 done
 
-run sudo firewall-cmd --reload
+run "${SUDO[@]}" firewall-cmd --reload
 
 # --- prende a zona na conexao do NetworkManager ---
 echo
@@ -116,12 +120,12 @@ for iface in "${LAN_IFACES[@]}"; do
   conn="$(nm_connection_for "$iface")"
   if [[ -n "$conn" ]]; then
     echo "  $iface (conexao NetworkManager: $conn)"
-    run sudo nmcli connection modify "$conn" connection.zone "$ZONE"
-    run sudo nmcli connection up "$conn"
+    run "${SUDO[@]}" nmcli connection modify "$conn" connection.zone "$ZONE"
+    run "${SUDO[@]}" nmcli connection up "$conn"
   else
     echo "  $iface (sem conexao NetworkManager ativa; aplicando direto no firewalld)"
-    run sudo firewall-cmd --permanent --zone="$ZONE" --add-interface="$iface"
-    run sudo firewall-cmd --reload
+    run "${SUDO[@]}" firewall-cmd --permanent --zone="$ZONE" --add-interface="$iface"
+    run "${SUDO[@]}" firewall-cmd --reload
   fi
 done
 
