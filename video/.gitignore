@@ -1,0 +1,4 @@
+# Intermediários da renderização (quadros, wav por cena, listas do ffmpeg).
+# Os MP4 publicados ficam versionados em render/, o resto se regenera.
+__pycache__/
+*.pyc

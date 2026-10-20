@@ -1,0 +1,155 @@
+1
+00:00:00,450 --> 00:00:03,633
+Montei um host de streaming de jogos em
+Linux com uma
+
+2
+00:00:03,693 --> 00:00:04,735
+regra inegociável:
+
+3
+00:00:04,795 --> 00:00:06,815
+nenhuma porta exposta na internet.
+
+4
+00:00:06,875 --> 00:00:09,875
+O caminho foi Tailscale mais Sunshine, num
+Bazzite
+
+5
+00:00:09,935 --> 00:00:10,977
+quarenta e quatro.
+
+6
+00:00:11,037 --> 00:00:14,159
+Compartilho aqui o desenho, e as três
+armadilhas que
+
+7
+00:00:14,219 --> 00:00:14,771
+encontrei.
+
+8
+00:00:15,831 --> 00:00:19,338
+O desenho é simples, e vale para qualquer
+serviço interno,
+
+9
+00:00:19,398 --> 00:00:20,445
+não só para jogos.
+
+10
+00:00:20,505 --> 00:00:23,766
+A interface da rede privada fica numa zona
+de firewall
+
+11
+00:00:23,826 --> 00:00:27,210
+permissiva, e a placa física vai para uma
+zona restrita.
+
+12
+00:00:27,270 --> 00:00:30,777
+O serviço escuta normalmente, mas só é
+alcançável por quem
+
+13
+00:00:30,837 --> 00:00:32,069
+está na rede privada.
+
+14
+00:00:33,129 --> 00:00:34,725
+A surpresa foi o firewall.
+
+15
+00:00:34,785 --> 00:00:37,974
+Quem vem do Windows espera lutar para
+abrir portas.
+
+16
+00:00:38,034 --> 00:00:41,415
+No Fedora e derivados, a zona padrão já
+libera a faixa
+
+17
+00:00:41,475 --> 00:00:43,772
+alta inteira, em todas as interfaces.
+
+18
+00:00:43,832 --> 00:00:46,066
+O trabalho de segurança não é abrir:
+
+19
+00:00:46,126 --> 00:00:47,850
+é fechar, de forma seletiva.
+
+20
+00:00:49,110 --> 00:00:52,577
+Três aprendizados que valem para quem
+automatiza Linux.
+
+21
+00:00:52,637 --> 00:00:53,154
+Primeiro:
+
+22
+00:00:53,214 --> 00:00:56,617
+pkexec não funciona a partir de um shell
+automatizado,
+
+23
+00:00:56,677 --> 00:00:59,951
+porque não há agente de autenticação
+atrelado àquele
+
+24
+00:01:00,011 --> 00:01:00,528
+processo.
+
+25
+00:01:00,588 --> 00:01:01,041
+Segundo:
+
+26
+00:01:01,101 --> 00:01:03,542
+nem todo erro no log é erro de verdade.
+
+27
+00:01:03,602 --> 00:01:04,120
+Terceiro:
+
+28
+00:01:04,180 --> 00:01:06,621
+configuração faltando nem sempre falha.
+
+29
+00:01:06,681 --> 00:01:09,442
+Às vezes ela só escolhe errado, em
+silêncio.
+
+30
+00:01:10,902 --> 00:01:14,356
+Documentei tudo em guia aberto, com
+scripts de validação e
+
+31
+00:01:14,416 --> 00:01:17,870
+de firewall, incluindo modo de simulação
+antes de aplicar.
+
+32
+00:01:17,930 --> 00:01:19,142
+Link nos comentários.
+
+33
+00:01:19,202 --> 00:01:22,535
+Se você resolve esse tipo de problema de
+outro jeito, me
+
+34
+00:01:22,595 --> 00:01:22,899
+conta:
+
+35
+00:01:22,959 --> 00:01:25,201
+tenho interesse genuíno na comparação.

@@ -1,0 +1,100 @@
+1
+00:00:00,450 --> 00:00:03,876
+Dá para jogar os jogos do seu PC no
+celular, de qualquer
+
+2
+00:00:03,936 --> 00:00:07,362
+lugar do mundo, sem abrir nenhuma porta
+para a internet.
+
+3
+00:00:07,422 --> 00:00:09,043
+No Bazzite, em três passos.
+
+4
+00:00:09,703 --> 00:00:11,778
+Sunshine no PC que tem os jogos.
+
+5
+00:00:11,838 --> 00:00:13,979
+Moonlight no aparelho que recebe.
+
+6
+00:00:14,039 --> 00:00:17,847
+E a Tailscale, que liga os dois numa rede
+privada, como se
+
+7
+00:00:17,907 --> 00:00:19,381
+estivessem lado a lado.
+
+8
+00:00:20,041 --> 00:00:21,707
+No Bazzite é quase pronto:
+
+9
+00:00:21,767 --> 00:00:25,291
+a Tailscale já vem instalada, e o Sunshine
+tem receita
+
+10
+00:00:25,351 --> 00:00:25,756
+pronta.
+
+11
+00:00:25,816 --> 00:00:28,345
+Dois comandos, e um login no navegador.
+
+12
+00:00:29,005 --> 00:00:31,283
+Agora a parte que quase ninguém conta:
+
+13
+00:00:31,343 --> 00:00:34,360
+no Linux o firewall já deixa essas portas
+abertas.
+
+14
+00:00:34,420 --> 00:00:36,391
+O trabalho não é abrir, é fechar.
+
+15
+00:00:36,451 --> 00:00:39,960
+Você manda a placa de rede de casa para
+uma zona restrita,
+
+16
+00:00:40,020 --> 00:00:41,991
+e deixa passar só a rede privada.
+
+17
+00:00:42,651 --> 00:00:43,603
+Resultado medido:
+
+18
+00:00:43,663 --> 00:00:46,878
+iPhone conectando direto no PC, três mil
+quatrocentos e
+
+19
+00:00:46,938 --> 00:00:50,092
+quarenta por mil quatrocentos e quarenta,
+em HEVC pela
+
+20
+00:00:50,152 --> 00:00:50,509
+NVIDIA.
+
+21
+00:00:51,169 --> 00:00:54,901
+O passo a passo completo, com todos os
+comandos, está no
+
+22
+00:00:54,961 --> 00:00:55,916
+link do perfil.
+
+23
+00:00:55,976 --> 00:00:57,406
+Me segue que tem mais.

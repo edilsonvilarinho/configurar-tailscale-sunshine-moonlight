@@ -1,0 +1,666 @@
+1
+00:00:00,450 --> 00:00:05,580
+Imagina sair de casa, abrir o celular ou o
+notebook, e continuar jogando os jogos
+
+2
+00:00:05,640 --> 00:00:08,079
+que estão instalados no seu computador.
+
+3
+00:00:08,139 --> 00:00:10,322
+Não é nuvem paga, não é assinatura:
+
+4
+00:00:10,382 --> 00:00:13,718
+é o seu próprio PC, com a sua própria
+placa de vídeo.
+
+5
+00:00:13,778 --> 00:00:18,908
+Neste tutorial a gente monta isso do zero
+no Bazzite, passo a passo, com todos os
+
+6
+00:00:18,968 --> 00:00:19,998
+comandos na tela.
+
+7
+00:00:20,058 --> 00:00:21,279
+E o mais importante:
+
+8
+00:00:21,339 --> 00:00:23,971
+sem abrir uma única porta para a internet.
+
+9
+00:00:25,431 --> 00:00:30,430
+O Bazzite é uma distribuição Linux feita
+para jogos, construída em cima do Fedora.
+
+10
+00:00:30,490 --> 00:00:33,515
+A diferença grande é que ele é um sistema
+atômico:
+
+11
+00:00:33,575 --> 00:00:37,772
+a base é uma imagem somente leitura, que
+atualiza inteira de uma vez.
+
+12
+00:00:37,832 --> 00:00:42,461
+Isso deixa o sistema difícil de quebrar,
+mas também muda a forma de instalar
+
+13
+00:00:42,521 --> 00:00:43,078
+programas.
+
+14
+00:00:43,138 --> 00:00:48,014
+Aqui a gente está na versão quarenta e
+quatro, variante Kinoite, que é a com KDE
+
+15
+00:00:48,074 --> 00:00:50,914
+Plasma, e na imagem com drivers NVIDIA
+abertos.
+
+16
+00:00:52,374 --> 00:00:55,291
+São três programas, e é importante não
+confundir.
+
+17
+00:00:55,351 --> 00:00:58,147
+O Sunshine fica no computador que tem os
+jogos:
+
+18
+00:00:58,207 --> 00:01:01,914
+ele captura a tela, comprime usando a
+placa de vídeo, e envia.
+
+19
+00:01:01,974 --> 00:01:04,951
+O Moonlight fica no aparelho que você leva
+na mão:
+
+20
+00:01:05,011 --> 00:01:06,653
+celular, tablet ou notebook.
+
+21
+00:01:06,713 --> 00:01:11,635
+E a Tailscale é a rede privada que liga os
+dois, como se estivessem na mesma sala,
+
+22
+00:01:11,695 --> 00:01:14,490
+mesmo que um esteja a mil quilômetros do
+outro.
+
+23
+00:01:15,950 --> 00:01:19,398
+Muito tutorial de streaming manda abrir
+porta no roteador.
+
+24
+00:01:19,458 --> 00:01:20,245
+Não faça isso.
+
+25
+00:01:20,305 --> 00:01:25,265
+Uma porta aberta fica exposta para o mundo
+inteiro, e qualquer um pode bater nela o
+
+26
+00:01:25,325 --> 00:01:25,810
+dia todo.
+
+27
+00:01:25,870 --> 00:01:30,164
+A Tailscale cria uma rede privada
+criptografada entre os seus aparelhos:
+
+28
+00:01:30,224 --> 00:01:33,128
+de fora, não existe porta nenhuma para
+encontrar.
+
+29
+00:01:33,188 --> 00:01:38,209
+E de quebra o endereço do seu PC passa a
+ser fixo, mesmo que o seu provedor troque
+o
+
+30
+00:01:38,269 --> 00:01:39,116
+IP da sua casa.
+
+31
+00:01:40,776 --> 00:01:44,279
+Antes de instalar qualquer coisa, vale
+olhar o terreno.
+
+32
+00:01:44,339 --> 00:01:46,935
+Estes comandos não mudam nada no sistema:
+
+33
+00:01:46,995 --> 00:01:48,230
+só mostram o estado.
+
+34
+00:01:48,290 --> 00:01:53,672
+Qual versão do Bazzite, se a sessão é
+Wayland, qual placa de vídeo, e se a
+Tailscale
+
+35
+00:01:53,732 --> 00:01:54,644
+já está ligada.
+
+36
+00:01:54,704 --> 00:01:55,810
+Guarde essa saída.
+
+37
+00:01:55,870 --> 00:02:00,215
+Se alguma coisa der errado lá na frente, é
+com ela que você compara.
+
+38
+00:02:01,875 --> 00:02:02,572
+Boa notícia:
+
+39
+00:02:02,632 --> 00:02:06,297
+no Bazzite a Tailscale já vem instalada,
+só está desligada.
+
+40
+00:02:06,357 --> 00:02:09,327
+O comando ujust tailscale enable liga o
+serviço.
+
+41
+00:02:09,387 --> 00:02:11,537
+Depois, o tailscale up faz o login.
+
+42
+00:02:11,597 --> 00:02:16,777
+Ele vai imprimir um link; você abre esse
+link no navegador e aprova o computador na
+
+43
+00:02:16,837 --> 00:02:17,408
+sua conta.
+
+44
+00:02:17,468 --> 00:02:20,754
+O parâmetro operator é um detalhe que
+poupa trabalho:
+
+45
+00:02:20,814 --> 00:02:25,867
+ele deixa você consultar a Tailscale
+depois sem pedir senha de administrador
+toda
+
+46
+00:02:25,927 --> 00:02:26,120
+vez.
+
+47
+00:02:27,980 --> 00:02:29,070
+Agora o Sunshine.
+
+48
+00:02:29,130 --> 00:02:34,075
+No Bazzite o caminho recomendado é o
+Flatpak, e existe uma receita pronta:
+
+49
+00:02:34,135 --> 00:02:35,496
+ujust setup-sunshine.
+
+50
+00:02:35,556 --> 00:02:37,592
+Escolha a opção Enable Flatpak.
+
+51
+00:02:37,652 --> 00:02:38,945
+Ela faz três coisas:
+
+52
+00:02:39,005 --> 00:02:43,950
+instala o programa, roda um script de
+permissões extras, e liga o serviço.
+
+53
+00:02:44,010 --> 00:02:47,873
+Preste atenção nesse script do meio, o
+additional install.
+
+54
+00:02:47,933 --> 00:02:51,999
+É ele que instala as permissões de
+teclado, mouse e controle.
+
+55
+00:02:52,059 --> 00:02:56,193
+Sem ele você até vê a imagem, mas não
+consegue clicar em nada.
+
+56
+00:02:58,053 --> 00:03:01,689
+Este passo não existe no Windows, e é onde
+mais gente trava.
+
+57
+00:03:01,749 --> 00:03:05,940
+No Wayland, nenhum programa captura a tela
+sem autorização explícita.
+
+58
+00:03:06,000 --> 00:03:09,575
+Na primeira vez que o Sunshine tentar, o
+KDE vai perguntar:
+
+59
+00:03:09,635 --> 00:03:11,423
+aceite, e marque para lembrar.
+
+60
+00:03:11,483 --> 00:03:16,228
+Depois, confira nas configurações do
+sistema que o Sunshine tem a permissão de
+
+61
+00:03:16,288 --> 00:03:17,214
+controle remoto.
+
+62
+00:03:17,274 --> 00:03:22,204
+Se mesmo assim aparecer o erro quinhentos
+e três, existe uma variável de ambiente
+
+63
+00:03:22,264 --> 00:03:26,455
+que resolve, e ela só vale depois de sair
+e entrar na sessão de novo.
+
+64
+00:03:28,115 --> 00:03:33,138
+Com o serviço no ar, abra a interface web
+na própria máquina, no endereço local,
+
+65
+00:03:33,198 --> 00:03:36,124
+porta quarenta e sete mil novecentos e
+noventa.
+
+66
+00:03:36,184 --> 00:03:38,157
+O aviso de certificado é normal:
+
+67
+00:03:38,217 --> 00:03:41,016
+o certificado é gerado pelo próprio
+Sunshine.
+
+68
+00:03:41,076 --> 00:03:43,113
+Crie o usuário e uma senha forte.
+
+69
+00:03:43,173 --> 00:03:45,146
+E vai um conselho que vale ouro:
+
+70
+00:03:45,206 --> 00:03:49,022
+não use a mesma senha do seu sistema, e
+não use seis dígitos.
+
+71
+00:03:49,082 --> 00:03:52,453
+Essa senha protege o controle total do seu
+computador.
+
+72
+00:03:54,113 --> 00:03:56,930
+Aqui tem duas pegadinhas do próprio
+Sunshine.
+
+73
+00:03:56,990 --> 00:03:57,633
+A primeira:
+
+74
+00:03:57,693 --> 00:04:02,557
+por padrão ele só aceita a interface web
+vinda da rede local, e o endereço da
+
+75
+00:04:02,617 --> 00:04:04,859
+Tailscale não conta como rede local.
+
+76
+00:04:04,919 --> 00:04:05,498
+A segunda:
+
+77
+00:04:05,558 --> 00:04:10,869
+na hora de enviar o código de pareamento,
+ele recusa origens que não conhece, com um
+
+78
+00:04:10,929 --> 00:04:11,700
+erro de CSRF.
+
+79
+00:04:11,760 --> 00:04:14,705
+As duas se resolvem no arquivo de
+configuração.
+
+80
+00:04:14,765 --> 00:04:19,757
+Repare que a gente faz cópia de segurança
+antes de editar, e reinicia o serviço
+
+81
+00:04:19,817 --> 00:04:20,204
+depois.
+
+82
+00:04:22,064 --> 00:04:27,088
+Este passo é o mais interessante do
+tutorial, porque ele inverte em relação ao
+
+83
+00:04:27,148 --> 00:04:27,610
+Windows.
+
+84
+00:04:27,670 --> 00:04:31,260
+No Windows, você briga para abrir as
+portas do Sunshine.
+
+85
+00:04:31,320 --> 00:04:36,279
+No Bazzite, a zona padrão do firewall já
+deixa todas essas portas abertas, em
+
+86
+00:04:36,339 --> 00:04:38,038
+qualquer interface de rede.
+
+87
+00:04:38,098 --> 00:04:38,560
+Ou seja:
+
+88
+00:04:38,620 --> 00:04:39,929
+não falta abrir nada.
+
+89
+00:04:39,989 --> 00:04:40,776
+Falta fechar.
+
+90
+00:04:40,836 --> 00:04:46,186
+O trabalho aqui é tirar o Sunshine da rede
+de casa e deixar ele só na rede privada.
+
+91
+00:04:48,046 --> 00:04:49,501
+A estratégia é simples.
+
+92
+00:04:49,561 --> 00:04:54,506
+A interface da Tailscale fica na zona
+padrão, que é permissiva, e por isso o
+
+93
+00:04:54,566 --> 00:04:55,757
+streaming funciona.
+
+94
+00:04:55,817 --> 00:05:00,959
+Já a placa de rede de casa vai para uma
+zona nova, restrita, que não abre essas
+
+95
+00:05:01,019 --> 00:05:01,420
+portas.
+
+96
+00:05:01,480 --> 00:05:04,449
+E tem um detalhe que pode te custar uma
+tarde:
+
+97
+00:05:04,509 --> 00:05:07,281
+não mexa na zona da interface da
+Tailscale.
+
+98
+00:05:07,341 --> 00:05:12,023
+Existe um defeito conhecido em que trocar
+a zona dela derruba a conexão.
+
+99
+00:05:12,083 --> 00:05:14,327
+A gente simplesmente não toca nela.
+
+100
+00:05:16,187 --> 00:05:21,106
+Se você tem mais de um monitor, preste
+atenção neste passo, porque o erro aqui é
+
+101
+00:05:21,166 --> 00:05:21,791
+silencioso.
+
+102
+00:05:21,851 --> 00:05:26,832
+Sem configurar, o Sunshine pega o primeiro
+fluxo que aparecer, que pode não ser a
+
+103
+00:05:26,892 --> 00:05:28,014
+sua tela principal.
+
+104
+00:05:28,074 --> 00:05:30,005
+Nada falha, nenhum erro aparece:
+
+105
+00:05:30,065 --> 00:05:32,121
+só chega a tela errada no celular.
+
+106
+00:05:32,181 --> 00:05:37,100
+O nome do monitor você descobre no próprio
+log do Sunshine, e fixa no arquivo de
+
+107
+00:05:37,160 --> 00:05:37,909
+configuração.
+
+108
+00:05:39,569 --> 00:05:42,213
+Tem um detalhe do Linux que pega todo
+mundo:
+
+109
+00:05:42,273 --> 00:05:47,006
+no Bazzite o Sunshine roda como serviço do
+seu usuário, e a captura depende da
+
+110
+00:05:47,066 --> 00:05:48,727
+sessão gráfica estar aberta.
+
+111
+00:05:48,787 --> 00:05:53,213
+Se o computador reiniciar e ninguém logar,
+não existe tela para capturar.
+
+112
+00:05:53,273 --> 00:05:57,268
+Então, se a ideia é ligar o PC de longe,
+ligue o login automático.
+
+113
+00:05:57,328 --> 00:05:58,682
+É uma troca consciente:
+
+114
+00:05:58,742 --> 00:06:02,492
+quem estiver fisicamente na frente da
+máquina entra sem senha.
+
+115
+00:06:02,552 --> 00:06:05,626
+Também vale impedir que o computador durma
+sozinho.
+
+116
+00:06:07,286 --> 00:06:08,627
+No aparelho é rápido.
+
+117
+00:06:08,687 --> 00:06:13,967
+Instale a Tailscale e entre na mesma
+conta, instale o Moonlight, e adicione o
+PC
+
+118
+00:06:14,027 --> 00:06:16,170
+pelo endereço que começa com cem.
+
+119
+00:06:16,230 --> 00:06:21,376
+O Moonlight vai mostrar um código de
+quatro dígitos, e esse código precisa ser
+
+120
+00:06:21,436 --> 00:06:22,845
+informado no Sunshine.
+
+121
+00:06:22,905 --> 00:06:28,318
+Dá para fazer pela interface web, ou, se
+preferir, direto pela linha de comando do
+
+122
+00:06:28,378 --> 00:06:30,655
+computador, com uma chamada de API.
+
+123
+00:06:30,715 --> 00:06:34,259
+Esse atalho evita o erro de CSRF de uma
+vez por todas.
+
+124
+00:06:35,919 --> 00:06:37,914
+Esses números não são estimativa:
+
+125
+00:06:37,974 --> 00:06:42,023
+saíram do log da instalação que serviu de
+base para este tutorial.
+
+126
+00:06:42,083 --> 00:06:46,443
+Um iPhone, fora de casa, conectou direto
+no PC, sem passar por servidor
+
+127
+00:06:46,503 --> 00:06:51,424
+intermediário, recebendo três mil
+quatrocentos e quarenta por mil
+quatrocentos e
+
+128
+00:06:51,484 --> 00:06:56,529
+quarenta, com vídeo em HEVC codificado
+pela própria placa NVIDIA, e áudio
+digital.
+
+129
+00:06:58,389 --> 00:07:02,518
+Para fechar, os tropeços mais comuns, com
+a causa de cada um.
+
+130
+00:07:02,578 --> 00:07:05,677
+Erro quinhentos e três é permissão de
+captura.
+
+131
+00:07:05,737 --> 00:07:08,218
+Erro de CSRF é origem não autorizada.
+
+132
+00:07:08,278 --> 00:07:12,063
+Imagem sem mouse é o script de permissões
+que não rodou.
+
+133
+00:07:12,123 --> 00:07:14,536
+Tela errada é monitor não escolhido.
+
+134
+00:07:14,596 --> 00:07:18,106
+E o aviso de CAP_SYS_ADMIN, que assusta, é
+só ruído.
+
+135
+00:07:18,166 --> 00:07:21,197
+Vale pausar o vídeo aqui e guardar esta
+tela:
+
+136
+00:07:21,257 --> 00:07:23,943
+ela economiza horas de procura em fórum.
+
+137
+00:07:29,803 --> 00:07:34,458
+Todo o passo a passo deste vídeo, com os
+comandos prontos para copiar, mais dois
+
+138
+00:07:34,518 --> 00:07:37,994
+scripts de apoio, estão no repositório no
+link da descrição.
+
+139
+00:07:38,054 --> 00:07:42,768
+Tem um script que valida a máquina antes
+de você mexer em qualquer coisa, e outro
+
+140
+00:07:42,828 --> 00:07:47,483
+que aplica a parte do firewall, com um
+modo de simulação para você ver o que ele
+
+141
+00:07:47,543 --> 00:07:49,486
+faria antes de aplicar de verdade.
+
+142
+00:07:49,546 --> 00:07:54,201
+Se este vídeo te ajudou, deixa o like e
+comenta qual aparelho você vai usar para
+
+143
+00:07:54,261 --> 00:07:54,555
+jogar.
+
+144
+00:07:54,615 --> 00:07:55,380
+Até a próxima.
