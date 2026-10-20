@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bazzite · Tailscale + Sunshine + Moonlight</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --panel:#ffffff; --panel-2:#f0f2f5; --ink:#15181d; --muted:#5a6472;
+    --line:#dfe3ea; --accent:#6f43c0; --accent-ink:#ffffff;
+    --code-bg:#0f1218; --code-ink:#e6e9ef; --ok:#1f7a45; --warn:#9a6700; --bad:#a3252b;
+    --ok-bg:#e7f6ec; --warn-bg:#fdf5e2; --bad-bg:#fdeceb;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0e1116; --panel:#161a21; --panel-2:#1c212a; --ink:#e7ebf1; --muted:#9aa5b4;
+      --line:#2a313c; --accent:#a98bff; --accent-ink:#13161c;
+      --code-bg:#0a0d12; --code-ink:#dfe5ee; --ok:#6ee7a0; --warn:#f0c674; --bad:#ff8f8f;
+      --ok-bg:#12271b; --warn-bg:#2a2314; --bad-bg:#2a1718;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;}
+  .wrap{max-width:68rem;margin:0 auto;padding:2.5rem 1.25rem 6rem;}
+  header.hero{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.75rem 1.5rem;margin-bottom:2rem;}
+  header.hero h1{margin:0 0 .35rem;font-size:1.9rem;line-height:1.2;}
+  header.hero p.sub{margin:0;color:var(--muted);}
+  .meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem;}
+  .tag{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:.2rem .7rem;font-size:.8rem;color:var(--muted);}
+  nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem 1.25rem;margin-bottom:2.5rem;}
+  nav.toc h2{margin:.2rem 0 .6rem;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  nav.toc ol{margin:0;padding-left:1.2rem;columns:2;column-gap:2rem;}
+  @media (max-width:640px){nav.toc ol{columns:1}}
+  nav.toc a{color:var(--ink);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{margin:0 0 2.75rem;}
+  h2{font-size:1.3rem;margin:2.5rem 0 .75rem;padding-top:.5rem;border-top:1px solid var(--line);}
+  h2 .n{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:.5rem;}
+  h3{font-size:1.02rem;margin:1.6rem 0 .5rem;}
+  p{margin:.6rem 0;}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;
+       background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:.08em .35em;}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:1rem 1.1rem;overflow-x:auto;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86rem;line-height:1.55;border:1px solid var(--line);}
+  pre code{background:none;border:0;padding:0;color:inherit;font-size:1em;}
+  .box{border-radius:10px;padding:.85rem 1.1rem;margin:1rem 0;border:1px solid var(--line);background:var(--panel);}
+  .box b.lbl{display:block;font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.25rem;}
+  .ok{background:var(--ok-bg);border-color:transparent} .ok b.lbl{color:var(--ok)}
+  .warn{background:var(--warn-bg);border-color:transparent} .warn b.lbl{color:var(--warn)}
+  .bad{background:var(--bad-bg);border-color:transparent} .bad b.lbl{color:var(--bad)}
+  .tablewrap{overflow-x:auto;margin:1rem 0;}
+  table{border-collapse:collapse;width:100%;font-size:.92rem;min-width:36rem;}
+  th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{background:var(--panel-2);font-weight:600;}
+  tbody tr:last-child td{border-bottom:0}
+  ul.check{list-style:none;padding-left:0;}
+  ul.check li{padding-left:1.7rem;position:relative;margin:.35rem 0;}
+  ul.check li::before{content:"☐";position:absolute;left:0;color:var(--accent);font-size:1.1rem;line-height:1.4;}
+  footer{margin-top:3rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem;}
+  a{color:var(--accent);}
+  .cmdnote{color:var(--muted);font-size:.86rem;margin-top:-.4rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Jogar remotamente a partir do Bazzite</h1>
+  <p class="sub">Host <b>Bazzite 44 Kinoite (NVIDIA)</b> com Sunshine, exposto só pela tailnet, para clientes Moonlight.</p>
+  <div class="meta">
+    <span class="tag">Host: bazzite · RTX 4070 SUPER · KDE Wayland</span>
+    <span class="tag">Tailscale 1.104.1 (já na imagem)</span>
+    <span class="tag">Sunshine 2026.914.233613 (Flatpak)</span>
+    <span class="tag">Escrito em 2026-10-20</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>Passo a passo</h2>
+  <ol>
+    <li><a href="#diferencas">O que muda em relação ao Windows</a></li>
+    <li><a href="#preflight">Pré-validação do host</a></li>
+    <li><a href="#tailscale">Tailscale no host</a></li>
+    <li><a href="#sunshine">Instalar o Sunshine</a></li>
+    <li><a href="#captura">Permissões de captura (Wayland/KDE)</a></li>
+    <li><a href="#credenciais">Credenciais e Web UI local</a></li>
+    <li><a href="#webui-remota">Liberar a Web UI pela tailnet</a></li>
+    <li><a href="#firewall">Firewall: restringir à tailnet</a></li>
+    <li><a href="#sempre-pronto">Deixar o host pronto sem ninguém na frente</a></li>
+    <li><a href="#cliente">Configurar o cliente Moonlight</a></li>
+    <li><a href="#validacao">Validação final</a></li>
+    <li><a href="#diagnostico">Diagnóstico</a></li>
+    <li><a href="#referencias">Referências</a></li>
+  </ol>
+</nav>
+
+<section id="diferencas">
+<h2><span class="n">1</span>O que muda em relação ao Windows</h2>
+
+<p>A arquitetura é a mesma do guia do <code>sammysan</code>: Sunshine no host, Moonlight no cliente, e os dois só se enxergam pela tailnet — sem port forwarding, sem porta pública. O que muda é tudo que é específico de sistema operacional, e um ponto inverte completamente de sinal.</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Assunto</th><th>Windows 11 (sammysan)</th><th>Bazzite 44 Kinoite</th></tr></thead>
+<tbody>
+<tr><td>Instalar Tailscale</td><td><code>winget install Tailscale.Tailscale</code></td><td>Já vem na imagem; só habilitar o serviço (<code>ujust tailscale enable</code>)</td></tr>
+<tr><td>Instalar Sunshine</td><td><code>winget install LizardByte.Sunshine</code></td><td><code>ujust setup-sunshine</code> → <i>Enable (Flatpak)</i></td></tr>
+<tr><td>Como o Sunshine roda</td><td>Serviço do sistema (<code>SunshineService</code>)</td><td>Serviço <b>de usuário</b> (<code>app-dev.lizardbyte.app.Sunshine</code>) — precisa de sessão gráfica aberta</td></tr>
+<tr><td>Captura de tela</td><td>DXGI, transparente</td><td>Portal/KWin Screencast; exige permissão explícita e pode dar <b>erro 503</b></td></tr>
+<tr><td>Config</td><td><code>C:\Program Files\Sunshine\config\sunshine.conf</code></td><td><code>~/.var/app/dev.lizardbyte.app.Sunshine/config/sunshine/sunshine.conf</code></td></tr>
+<tr><td><b>Firewall</b></td><td>Bloqueava tudo: o perfil <i>Private</i> estava com <code>AllowInboundRules=False</code> e engolia as regras do Sunshine</td><td><b>Não bloqueia nada:</b> a zona padrão <code>FedoraWorkstation</code> já libera TCP/UDP 1025‑65535 em qualquer interface</td></tr>
+<tr><td>Trabalho de firewall</td><td>Abrir as portas certas</td><td><b>Fechar</b> as portas para a LAN, deixando só a tailnet</td></tr>
+<tr><td>Streaming do Steam em modo console</td><td>Big Picture normal</td><td>Game Mode (gamescope) só com captura KMS — o Flatpak não faz; Desktop + Big Picture funciona</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+<b class="lbl">A inversão que importa</b>
+No Windows o problema foi o firewall <i>derrubar</i> conexões legítimas da tailnet. No Bazzite o problema é o oposto: as portas do Sunshine nascem abertas também para a rede local de casa. A etapa <a href="#firewall">8</a> existe para fechar isso, e não para abrir nada.
+</div>
+
+<h3>Portas do Sunshine (idênticas nos dois sistemas)</h3>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Porta</th><th>Protocolo</th><th>Uso</th></tr></thead>
+<tbody>
+<tr><td>47984</td><td>TCP</td><td>HTTPS do serviço</td></tr>
+<tr><td>47989</td><td>TCP</td><td>HTTP do serviço (porta base)</td></tr>
+<tr><td>47990</td><td>TCP</td><td>Web UI (<code>https://…:47990</code>)</td></tr>
+<tr><td>48010</td><td>TCP</td><td>RTSP — <b>a que faltava no guia original</b></td></tr>
+<tr><td>47998 / 47999 / 48000</td><td>UDP</td><td>vídeo / controle / áudio</td></tr>
+<tr><td>48002</td><td>UDP</td><td>microfone (só se for usar)</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="preflight">
+<h2><span class="n">2</span>Pré-validação do host</h2>
+
+<p>Nada aqui altera o sistema. Rode e guarde a saída antes de mexer em qualquer coisa — é o equivalente ao <code>bootstrap-elevated.ps1</code> do guia do Windows.</p>
+
+<pre><code>bash scripts/bazzite-host-preflight.sh</code></pre>
+<p class="cmdnote">O script está neste repositório, em <code>scripts/</code>. Ele é somente leitura.</p>
+
+<p>Se preferir à mão, o essencial é:</p>
+<pre><code># imagem e variante
+cat /etc/os-release | grep -E '^(PRETTY_NAME|VARIANT_ID)='
+rpm-ostree status
+
+# sessão gráfica (precisa ser wayland + KDE para captura via KWin)
+echo "$XDG_SESSION_TYPE $XDG_CURRENT_DESKTOP"
+
+# GPU e driver
+lspci | grep -iE 'vga|3d'
+nvidia-smi --query-gpu=name,driver_version --format=csv,noheader
+
+# o que já existe
+tailscale version; systemctl is-enabled tailscaled
+flatpak info dev.lizardbyte.app.Sunshine 2>/dev/null || echo "Sunshine ainda não instalado"
+systemctl --user is-enabled app-dev.lizardbyte.app.Sunshine 2>/dev/null
+
+# firewall
+firewall-cmd --get-default-zone
+firewall-cmd --get-active-zones</code></pre>
+
+<div class="box ok">
+<b class="lbl">Medido nesta máquina em 2026-10-20</b>
+Bazzite 44.20261012 Kinoite (<code>bazzite-nvidia-open</code>), sessão Wayland/KDE, RTX 4070 SUPER,
+<code>tailscale 1.104.1</code> presente mas com <code>tailscaled</code> <b>desabilitado</b>,
+Sunshine e Moonlight <b>não instalados</b>, <code>firewalld</code> ativo com zona padrão
+<code>FedoraWorkstation</code> e apenas <code>enp5s0</code> ativa. Dois monitores: 2560×1440@165 e 3440×1440@165.
+</div>
+</section>
+
+<section id="tailscale">
+<h2><span class="n">3</span>Tailscale no host</h2>
+
+<p>O binário já está na imagem do Bazzite; o que falta é ligar o serviço. Use a receita do próprio Bazzite, que é só um <code>systemctl enable --now</code> com <code>sudo</code>:</p>
+
+<pre><code>ujust tailscale enable
+# equivalente: sudo systemctl enable --now tailscaled.service</code></pre>
+
+<p>Autentique na <b>mesma tailnet</b> do cliente. O <code>--operator</code> evita precisar de <code>sudo</code> para todo comando <code>tailscale</code> depois:</p>
+
+<pre><code>sudo tailscale up --operator="$USER"</code></pre>
+
+<p>O comando imprime um link <code>https://login.tailscale.com/…</code>. Abra, aprove o dispositivo e confirme:</p>
+
+<pre><code>tailscale status
+tailscale ip -4          # anote: este é o IP 100.x.x.x do host
+tailscale netcheck</code></pre>
+
+<div class="box warn">
+<b class="lbl">O nó antigo do Windows</b>
+Se este computador é o mesmo <code>sammysan</code> reinstalado, o nó Windows antigo continua na tailnet com o IP <code>100.78.107.32</code>. O host Bazzite entra como um <b>nó novo</b>, com nome <code>bazzite</code> e <b>IP diferente</b>. Remova o nó antigo no painel (<a href="https://login.tailscale.com/admin/machines">login.tailscale.com/admin/machines</a>) para não confundir os clientes, e use sempre o IP novo daqui para frente. Todo endereço <code>100.78.107.32</code> dos documentos do Windows está obsoleto.
+</div>
+
+<p>Opcional, mas confortável: com MagicDNS ligado na tailnet, o host responde por <code>bazzite</code> e você não precisa decorar o IP.</p>
+</section>
+
+<section id="sunshine">
+<h2><span class="n">4</span>Instalar o Sunshine</h2>
+
+<p>O caminho suportado no Bazzite para imagem de desktop é o Flatpak, pela receita <code>ujust</code> (a mesma coisa que o Bazzite Portal faz):</p>
+
+<pre><code>ujust setup-sunshine
+# escolha: Enable (Flatpak)</code></pre>
+
+<p>A receita faz, nesta ordem:</p>
+<pre><code>flatpak install --system -y dev.lizardbyte.app.Sunshine
+flatpak run --command=additional-install.sh dev.lizardbyte.app.Sunshine   # pede senha: regras de udev/uinput
+systemctl --user enable --now app-dev.lizardbyte.app.Sunshine</code></pre>
+
+<p>O <code>additional-install.sh</code> é o que instala as permissões de entrada (teclado, mouse e controle virtuais via <code>uinput</code>). Sem ele o vídeo até funciona, mas o controle remoto não.</p>
+
+<p>Confirme o serviço e as portas:</p>
+<pre><code>systemctl --user status app-dev.lizardbyte.app.Sunshine --no-pager
+ss -ltnp | grep -E '47984|47989|47990|48010'
+ss -lunp | grep -E '47998|47999|48000'</code></pre>
+
+<div class="box">
+<b class="lbl">Quando NÃO usar o Flatpak</b>
+<p style="margin:.3rem 0 0">O Flatpak não suporta captura por <b>KMS</b>, que é o que o Game Mode (gamescope) das imagens Deck exige. Esta máquina é Kinoite de desktop, então o Flatpak é o certo. Se um dia você quiser transmitir o Game Mode, as alternativas são <code>ujust setup-sunshine enable-brew</code> (pacote experimental) ou camada por COPR — e aí o arquivo de configuração passa a ser <code>~/.config/sunshine/sunshine.conf</code>, não o caminho do Flatpak.</p>
+</div>
+</section>
+
+<section id="captura">
+<h2><span class="n">5</span>Permissões de captura (Wayland/KDE)</h2>
+
+<p>Esta etapa não tem equivalente no Windows e é a que mais trava gente. No Wayland, nenhum programa captura a tela sem permissão explícita do compositor.</p>
+
+<ol>
+  <li>Na primeira vez que o Sunshine iniciar uma sessão, o KDE pede autorização de compartilhamento de tela — <b>aceite e marque para lembrar</b>.</li>
+  <li>Confira em <i>Configurações do Sistema → Aplicativos → Permissões de aplicativos</i> (ou <i>Application Permissions</i>) que o Sunshine tem <b>Controle remoto</b> (<i>Remote control</i>) ligado. Sem isso o mouse e o teclado remotos não funcionam.</li>
+  <li>Na Web UI do Sunshine, em <i>Configuration → Audio/Video</i>, deixe o método de captura em <b>KWin Screencast</b> (ou XDG Portal). <b>X11 e NvFBC não são suportados no Bazzite.</b></li>
+</ol>
+
+<div class="box bad">
+<b class="lbl">Erro 503 / "Failed to find display"</b>
+<p style="margin:.3rem 0 .6rem">É a falha clássica do KWin recusando a captura. A correção oficial do Bazzite é a variável de ambiente:</p>
+<pre><code>mkdir -p ~/.config/environment.d
+echo 'KWIN_WAYLAND_NO_PERMISSION_CHECKS=1' > ~/.config/environment.d/98-kwin-no-permission-checks.conf
+# saia da sessão e entre de novo (a variável só vale para sessões novas)</code></pre>
+<p style="margin:.6rem 0 0">A receita <code>ujust setup-sunshine virtual-monitor</code> → <i>Fix Error 503</i> escreve exatamente esse arquivo.</p>
+</div>
+
+<h3>Dois monitores</h3>
+<p>Esta máquina tem duas telas (2560×1440 e 3440×1440). O Sunshine captura <b>uma</b> saída. Escolha qual em <i>Configuration → Audio/Video → Display</i>; caso contrário ele pega a primeira e o cliente recebe a tela errada. Se quiser uma resolução própria para o cliente, sem depender de um monitor físico, use o monitor virtual:</p>
+<pre><code>ujust setup-sunshine virtual-monitor   # → Add Virtual Monitor</code></pre>
+<p>Isso adiciona uma aplicação "Virtual Monitor" no Sunshine que cria e destrói uma saída KWin por sessão. Só funciona em KWin (Kinoite — é o caso aqui) e exige o método de captura <b>KWin Screencast</b>.</p>
+</section>
+
+<section id="credenciais">
+<h2><span class="n">6</span>Credenciais e Web UI local</h2>
+
+<p>Faça o primeiro acesso <b>localmente</b>, antes de pensar em acesso remoto:</p>
+<pre><code>xdg-open https://localhost:47990      # ou: ujust setup-sunshine portal</code></pre>
+
+<p>O aviso de certificado é esperado — o certificado é autoassinado, igual ao do Windows. Crie o usuário <code>admin</code> com uma senha forte, de 24 caracteres ou mais, gerada na hora. Nunca reutilize a senha do guia antigo, e não grave a senha em arquivo neste repositório.</p>
+
+<p>Se precisar redefinir depois:</p>
+<pre><code>systemctl --user stop app-dev.lizardbyte.app.Sunshine
+flatpak run --command=sunshine dev.lizardbyte.app.Sunshine --creds admin '&lt;senha&gt;'
+systemctl --user start app-dev.lizardbyte.app.Sunshine</code></pre>
+<p class="cmdnote">Use aspas simples e, de preferência, um histórico de shell desligado (<code>HISTCONTROL=ignorespace</code> + espaço antes do comando).</p>
+</section>
+
+<section id="webui-remota">
+<h2><span class="n">7</span>Liberar a Web UI pela tailnet</h2>
+
+<p>Dois detalhes do Sunshine se repetem aqui exatamente como no Windows, porque são do Sunshine e não do sistema:</p>
+
+<p><b>1. <code>origin_web_ui_allowed</code>.</b> O padrão <code>lan</code> só aceita faixas privadas (10/8, 172.16/12, 192.168/16). A tailnet usa <code>100.64.0.0/10</code> (CGNAT), que <b>não</b> conta como LAN — por isso o acesso pelo IP <code>100.x</code> é recusado. Precisa de <code>wan</code>.</p>
+
+<p><b>2. <code>csrf_allowed_origins</code>.</b> Sem a origem exata, o envio do PIN falha com <code>CSRF Protection Error</code>. Foi o que aconteceu no <code>sammysan</code>.</p>
+
+<pre><code>CONF=~/.var/app/dev.lizardbyte.app.Sunshine/config/sunshine/sunshine.conf
+cp -a "$CONF" "$CONF.backup-$(date +%Y%m%d-%H%M%S)"
+
+HOST_IP=$(tailscale ip -4)
+printf 'origin_web_ui_allowed = wan\nupnp = disabled\ncsrf_allowed_origins = https://%s:47990\n' "$HOST_IP" >> "$CONF"
+
+systemctl --user restart app-dev.lizardbyte.app.Sunshine</code></pre>
+
+<p>Se a chave já existir no arquivo, edite a linha em vez de acrescentar outra. Confira o resultado:</p>
+<pre><code>grep -E 'origin_web_ui_allowed|csrf_allowed_origins|upnp' "$CONF"</code></pre>
+
+<div class="box warn">
+<b class="lbl"><code>wan</code> não é "aberto para a internet"</b>
+<code>wan</code> apenas diz ao Sunshine para não filtrar a origem por faixa de IP. Quem limita o alcance é o firewall (etapa 8) e o fato de não existir port forwarding: a porta continua inalcançável fora da tailnet. Mantenha <code>upnp = disabled</code> para o roteador nunca abrir essas portas sozinho.
+</div>
+</section>
+
+<section id="firewall">
+<h2><span class="n">8</span>Firewall: restringir à tailnet</h2>
+
+<p>Aqui está a diferença real para o Windows. A zona padrão do Bazzite é <code>FedoraWorkstation</code>, e ela contém:</p>
+
+<pre><code>&lt;port protocol="tcp" port="1025-65535"/&gt;
+&lt;port protocol="udp" port="1025-65535"/&gt;</code></pre>
+
+<p>Ou seja: todas as portas do Sunshine já estão abertas, em <b>todas</b> as interfaces — inclusive na placa de rede de casa. Nada precisa ser aberto para o Moonlight funcionar pela tailnet. O que vale a pena fazer é o contrário: tirar o Sunshine da LAN.</p>
+
+<div class="box bad">
+<b class="lbl">Não mexa na zona da interface <code>tailscale0</code></b>
+Há um defeito conhecido (<a href="https://github.com/tailscale/tailscale/issues/15968">tailscale#15968</a>, versões ≥ 1.84; esta máquina roda 1.104.1) em que trocar a zona do <code>tailscale0</code> no firewalld derruba a interface. A estratégia abaixo <b>nunca toca</b> no <code>tailscale0</code>: ele continua caindo na zona padrão permissiva. Quem fica restrito é a placa cabeada.
+</div>
+
+<h3>Estratégia</h3>
+<ol>
+  <li><code>tailscale0</code> → zona padrão <code>FedoraWorkstation</code> (portas altas liberadas ⇒ Sunshine acessível pela tailnet).</li>
+  <li><code>enp5s0</code> (LAN) → zona nova e restrita, sem a faixa 1025‑65535 ⇒ Sunshine inacessível da rede de casa.</li>
+</ol>
+
+<pre><code>bash scripts/bazzite-host-firewall-tailnet.sh            # mostra o que faria (dry-run)
+bash scripts/bazzite-host-firewall-tailnet.sh --apply    # aplica
+bash scripts/bazzite-host-firewall-tailnet.sh --revert   # volta a LAN para a zona padrão</code></pre>
+
+<p>À mão, é isto:</p>
+<pre><code>ZONE=lan-restrito
+sudo firewall-cmd --permanent --new-zone="$ZONE"
+sudo firewall-cmd --permanent --zone="$ZONE" --add-service=dhcpv6-client
+sudo firewall-cmd --permanent --zone="$ZONE" --add-service=mdns
+sudo firewall-cmd --reload
+
+# prende a zona na conexão do NetworkManager (sobrevive a reboot e a reconexão)
+sudo nmcli connection modify "Conexão cabeada 1" connection.zone "$ZONE"
+sudo nmcli connection up "Conexão cabeada 1"
+
+firewall-cmd --get-active-zones</code></pre>
+
+<p>Verifique de outro computador da LAN (<b>fora</b> da tailnet) que a porta fechou, e de um dispositivo da tailnet que ela continua aberta:</p>
+<pre><code># na LAN, deve falhar:
+nc -vz &lt;ip-lan-do-bazzite&gt; 47990
+# na tailnet, deve conectar:
+nc -vz &lt;ip-100.x-do-bazzite&gt; 47990</code></pre>
+
+<div class="box warn">
+<b class="lbl">O que você perde ao restringir a LAN</b>
+A zona nova bloqueia conexões de entrada da rede local que hoje passam: KDE Connect, Steam Remote Play na LAN, compartilhamentos e qualquer serviço de porta alta. Se usar algum deles, acrescente a porta à zona em vez de desistir da restrição — por exemplo <code>--add-port=1714-1764/udp</code> e <code>--add-port=1714-1764/tcp</code> para o KDE Connect. O script aceita portas extras pela variável <code>EXTRA_PORTS</code>.
+</div>
+
+<h3>Opcional: limitar a um cliente só</h3>
+<p>Equivalente às regras por IP de origem feitas no Windows. Só vale se você quiser restringir <i>dentro</i> da tailnet:</p>
+<pre><code>CLIENTE=100.114.232.6   # IP tailscale do cliente
+sudo firewall-cmd --permanent --new-zone=tailnet-sunshine
+sudo firewall-cmd --permanent --zone=tailnet-sunshine --add-source="$CLIENTE/32"
+sudo firewall-cmd --permanent --zone=tailnet-sunshine \
+  --add-port=47984/tcp --add-port=47989/tcp --add-port=47990/tcp --add-port=48010/tcp \
+  --add-port=47998/udp --add-port=47999/udp --add-port=48000/udp
+sudo firewall-cmd --reload</code></pre>
+<p class="cmdnote">Zona por <code>source</code> tem precedência sobre zona por interface, e não exige mexer no <code>tailscale0</code>. Para isso valer como restrição, a zona padrão precisa deixar de liberar as portas altas — o que significa também restringir a interface da tailnet, com o risco descrito acima. Prefira controlar isso pelas ACLs da tailnet, que é onde essa decisão pertence no Tailscale.</p>
+</section>
+
+<section id="sempre-pronto">
+<h2><span class="n">9</span>Deixar o host pronto sem ninguém na frente</h2>
+
+<p>O Sunshine do Bazzite é um serviço <b>de usuário</b> e a captura é do compositor: se ninguém estiver logado na sessão gráfica, não há o que capturar e o serviço nem sobe. No Windows isso não aparecia, porque lá era um serviço de sistema.</p>
+
+<h3>Login automático no KDE</h3>
+<pre><code>sudo mkdir -p /etc/sddm.conf.d
+sudo tee /etc/sddm.conf.d/10-autologin.conf &gt;/dev/null &lt;&lt;'EOF'
+[Autologin]
+User=edi
+Session=plasma.desktop
+Relogin=false
+EOF</code></pre>
+<div class="box warn">
+<b class="lbl">Compromisso consciente</b>
+Login automático significa que quem tiver acesso físico à máquina entra no seu desktop sem senha. É o preço de poder ligar o PC e jogar de longe. Se o computador fica em casa e trancado, costuma valer; se não, prefira deixar a sessão aberta e apenas bloquear a tela — mas atenção: com a tela bloqueada, o KDE pode suspender a captura, então teste antes de confiar.
+</div>
+
+<h3>Não suspender</h3>
+<p>Em <i>Configurações do Sistema → Energia</i>, deixe "Suspender a sessão" como <b>Nunca</b> no modo ligado na tomada, e desligue o desligamento automático da tela se ele atrapalhar a captura. Pela linha de comando, a trava dura é:</p>
+<pre><code>sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+# reverter: sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target</code></pre>
+
+<h3>Serviço de usuário ativo cedo</h3>
+<pre><code>loginctl enable-linger "$USER"     # mantém serviços de usuário vivos
+systemctl --user is-enabled app-dev.lizardbyte.app.Sunshine</code></pre>
+<p class="cmdnote">O <i>linger</i> sozinho não resolve a captura (ela depende da sessão gráfica), mas evita que o serviço morra em transições de sessão.</p>
+
+<h3>Jogos</h3>
+<p>Com o Flatpak, transmita a aplicação <b>Desktop</b> e abra o Steam em Big Picture dentro da sessão, ou cadastre o Steam como aplicação no Sunshine (<i>Applications → Add</i>) com o comando:</p>
+<pre><code>steam steam://open/bigpicture</code></pre>
+<p>O Game Mode do Bazzite (gamescope) <b>não</b> é transmitido pelo Flatpak — precisaria de captura KMS, do pacote brew/COPR.</p>
+</section>
+
+<section id="cliente">
+<h2><span class="n">10</span>Configurar o cliente Moonlight</h2>
+
+<p>O cliente Windows <code>NOTE-LAT-012</code> já tem Tailscale e Moonlight do guia anterior. Não há nada a instalar — apenas apontar para o host novo:</p>
+
+<ol>
+  <li>Confirme que o cliente está na mesma tailnet e que o host <code>bazzite</code> aparece online: <code>tailscale status</code>.</li>
+  <li>Teste a rota e a porta:
+  <pre><code>tailscale ping &lt;ip-100.x-do-bazzite&gt;
+Test-NetConnection &lt;ip-100.x-do-bazzite&gt; -Port 47990</code></pre></li>
+  <li>No Moonlight, <b>remova o host antigo</b> (<code>sammysan</code> / <code>100.78.107.32</code>) e use <i>Add PC</i> com o IP novo.</li>
+  <li>O Moonlight mostra um PIN. Abra <code>https://&lt;ip-100.x&gt;:47990</code>, aba <b>PIN</b>, informe o código e nomeie o dispositivo.</li>
+</ol>
+
+<p>Para um cliente Linux (inclusive outro Bazzite): <code>flatpak install flathub com.moonlight_stream.Moonlight</code>. Para tablet/celular, o Moonlight das lojas + Tailscale na mesma conta. Em qualquer caso, o pareamento é por PIN e precisa ser refeito por dispositivo.</p>
+
+<div class="box">
+<b class="lbl">O pareamento antigo não vale mais</b>
+<p style="margin:.3rem 0 0">Os certificados de pareamento ficam na instalação do Sunshine. Como esta é uma instalação nova, todo cliente precisa parear de novo, mesmo que o Moonlight ainda liste o host antigo.</p>
+</div>
+</section>
+
+<section id="validacao">
+<h2><span class="n">11</span>Validação final</h2>
+<ul class="check">
+  <li><code>tailscale status</code> no host mostra a tailnet certa e o host recebeu IP <code>100.x.x.x</code>.</li>
+  <li><code>systemctl --user is-active app-dev.lizardbyte.app.Sunshine</code> responde <code>active</code>.</li>
+  <li><code>ss -ltn</code> mostra 47984, 47989, 47990 e 48010 escutando; <code>ss -lun</code> mostra 47998, 47999 e 48000.</li>
+  <li>Web UI abre em <code>https://localhost:47990</code> e exige login (não mostra a tela de criação inicial).</li>
+  <li>Do cliente, <code>https://&lt;ip-100.x&gt;:47990</code> abre e aceita o PIN sem erro de CSRF.</li>
+  <li>Da LAN (fora da tailnet), a porta 47990 <b>não</b> conecta.</li>
+  <li>Moonlight lista as aplicações e inicia a sessão: imagem, áudio, teclado, mouse e controle.</li>
+  <li>Reconexão: fechar e reabrir a sessão no Moonlight funciona sem reiniciar o Sunshine.</li>
+  <li>Depois de um reboot do host, tudo volta sozinho (autologin + serviço + tailscaled).</li>
+</ul>
+</section>
+
+<section id="diagnostico">
+<h2><span class="n">12</span>Diagnóstico</h2>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Sintoma</th><th>Causa provável</th><th>O que fazer</th></tr></thead>
+<tbody>
+<tr><td>Web UI não abre nem em <code>localhost</code></td><td>Serviço de usuário parado ou sessão gráfica ausente</td><td><code>systemctl --user status app-dev.lizardbyte.app.Sunshine</code> e <code>journalctl --user -u app-dev.lizardbyte.app.Sunshine -b</code></td></tr>
+<tr><td>Abre local, não abre pela tailnet</td><td><code>origin_web_ui_allowed</code> em <code>lan</code></td><td>Etapa <a href="#webui-remota">7</a>: mudar para <code>wan</code> e reiniciar o serviço</td></tr>
+<tr><td><code>CSRF Protection Error</code> ao enviar o PIN</td><td>Origem <code>https://100.x:47990</code> não autorizada</td><td>Acrescentar em <code>csrf_allowed_origins</code> a origem exata, reiniciar, recarregar a página</td></tr>
+<tr><td>Erro 503 / "Failed to find display"</td><td>KWin recusando a captura</td><td><code>KWIN_WAYLAND_NO_PERMISSION_CHECKS=1</code> + relogin; conferir permissão de <i>Controle remoto</i></td></tr>
+<tr><td>Vídeo funciona, mouse/teclado não</td><td><code>additional-install.sh</code> não rodou (sem <code>uinput</code>)</td><td><code>flatpak run --command=additional-install.sh dev.lizardbyte.app.Sunshine</code></td></tr>
+<tr><td>Erro NVIDIA <code>00003009</code></td><td>Incompatibilidade de captura/encoder</td><td>Atualizar Bazzite e o Flatpak; testar XDG Portal com outro encoder</td></tr>
+<tr><td><code>tailscale ping</code> falha</td><td>Rota/tailnet, não é firewall</td><td><code>tailscale netcheck</code> nos dois lados; conferir se é a mesma conta</td></tr>
+<tr><td>Ping ok, porta fechada</td><td>Firewall ou serviço parado</td><td><code>firewall-cmd --get-active-zones</code>, <code>firewall-cmd --list-all --zone=&lt;zona&gt;</code>, <code>ss -ltn</code></td></tr>
+<tr><td>Tela preta no Moonlight</td><td>Monitor errado em multi-monitor, ou tela desligada por economia</td><td>Fixar o <i>Display</i> na Web UI; desligar a suspensão da tela; ou usar monitor virtual</td></tr>
+<tr><td>Interface da tailnet cai após mexer no firewalld</td><td>Defeito <a href="https://github.com/tailscale/tailscale/issues/15968">tailscale#15968</a></td><td><code>sudo systemctl restart tailscaled</code> e não voltar a trocar a zona do <code>tailscale0</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Coleta de evidências (equivalente ao PktMon do Windows)</h3>
+<pre><code>journalctl --user -u app-dev.lizardbyte.app.Sunshine -b --no-pager | tail -n 200
+sudo nft list ruleset | head -n 80
+firewall-cmd --list-all-zones | sed -n '1,120p'
+tailscale status --json | head -n 40
+sudo tcpdump -ni tailscale0 'port 47990 or port 48010' -c 20</code></pre>
+<p class="cmdnote">Nunca cole senha, token ou PIN em log, issue ou neste repositório.</p>
+</section>
+
+<section id="referencias">
+<h2><span class="n">13</span>Referências</h2>
+<ul>
+  <li>Bazzite — Sunshine: <a href="https://docs.bazzite.gg/Advanced/sunshine/">docs.bazzite.gg/Advanced/sunshine</a></li>
+  <li>Bazzite — resolução personalizada / monitor virtual: <a href="https://docs.bazzite.gg/Advanced/custom_resolution/">docs.bazzite.gg/Advanced/custom_resolution</a></li>
+  <li>Sunshine — configuração (<code>origin_web_ui_allowed</code>, <code>csrf_allowed_origins</code>, captura, NVENC): <a href="https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2configuration.html">docs.lizardbyte.dev</a></li>
+  <li>Sunshine — solução de problemas: <a href="https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2troubleshooting.html">docs.lizardbyte.dev/…/troubleshooting</a></li>
+  <li>Tailscale — instalação e CLI: <a href="https://tailscale.com/kb/1031/install-linux">tailscale.com/kb/1031/install-linux</a></li>
+  <li>Tailscale — defeito de zona do firewalld: <a href="https://github.com/tailscale/tailscale/issues/15968">tailscale/tailscale#15968</a></li>
+  <li>Tailscale com firewalld (artigo de referência): <a href="https://major.io/p/secure-tailscale-networks-with-firewalld/">major.io</a></li>
+  <li>Moonlight — guia de configuração: <a href="https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide">moonlight-docs wiki</a></li>
+  <li>Guia do host Windows deste mesmo repositório: <code>planos/configurar-tailscale-sunshine-moonlight.md</code></li>
+</ul>
+</section>
+
+<footer>
+  Documento escrito em 2026-10-20 para o host <code>bazzite</code> (Bazzite 44.20261012 Kinoite, <code>bazzite-nvidia-open</code>).
+  Os estados marcados como "medido" foram verificados na máquina nessa data; o restante vem da documentação oficial citada acima.
+  Nenhuma senha, token ou PIN deve ser registrado aqui.
+</footer>
+
+</div>
+</body>
+</html>
