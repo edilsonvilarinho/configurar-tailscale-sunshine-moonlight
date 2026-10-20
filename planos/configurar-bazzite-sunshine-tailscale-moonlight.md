@@ -109,7 +109,7 @@ todo cliente precisa refazer o PIN, inclusive o `NOTE-LAT-012`.
 | 13 | Suspensão e linger | `systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target`; `loginctl enable-linger edi` | Feito |
 | 14 | Autologin | `/etc/sddm.conf.d/10-autologin.conf` com `User=edi`, `Session=plasma.desktop` | Feito a pedido do usuário; compromisso de segurança física aceito |
 | 15 | Validar a Web UI pelo IP da tailnet | `curl -sk https://100.89.62.103:47990/` e com `-u admin:<senha>` | Feito: `401` sem credencial, `200` com credencial, API lista as duas aplicações |
-| 16 | Parear um cliente e validar a sessão | ver guia, etapas 10 e 11 | **Pendente** — nenhum cliente estava online na tailnet no momento da execução |
+| 16 | Parear um cliente e validar a sessão | pareamento pelo Moonlight do iPhone (`iphone-12-pro-max`, `100.120.43.7`) | Feito em 2026-10-20 14:46: certificado `iphone` registrado, `CLIENT CONNECTED`, `Streaming display 'DP-1' 3440x1440`, `hevc_nvenc`, bitrate 14.988 Mbps, Opus 48 kHz 2 canais; conexão Tailscale **direta** (sem DERP). Sessão encerrada pelo usuário após 6 s |
 
 ## Regras de segurança do procedimento
 
@@ -117,6 +117,20 @@ todo cliente precisa refazer o PIN, inclusive o `NOTE-LAT-012`.
 - Nenhum port forwarding, nenhuma porta pública, firewall nunca desativado como "solução".
 - Backup de `sunshine.conf` antes de qualquer edição.
 - Ampliar o acesso dentro da tailnet é decisão explícita (ACL do Tailscale), não efeito colateral.
+
+## Pendências conhecidas
+
+- **Senhas a trocar**: a senha do sistema foi digitada em um canal de conversa durante a execução, e
+  a credencial da Web UI do Sunshine (`admin`) foi definida com o mesmo valor, de 6 dígitos. Trocar
+  as duas, com valores diferentes entre si.
+- **Prioridade de thread**: o log repete `setpriority failed for nice -15: Permissão negada` e
+  `EGL: context priority set to HIGH but CAP_SYS_NICE capability is missing`. Não impede o
+  streaming; sob carga pode custar frames. Correção seria elevar o limite de `nice` do usuário
+  (`/etc/security/limits.d/`), ainda não avaliada.
+- **Teste longo**: a validação durou 6 s, encerrada pelo usuário. Falta uma sessão real de jogo para
+  julgar estabilidade, latência e reconexão.
+- **Clientes restantes**: `note-lat-012`, `redmi-pad-se` e `realme-c61` ainda não foram pareados com
+  esta instalação — o pareamento é por dispositivo.
 
 ## Observações da execução (2026-10-20)
 
