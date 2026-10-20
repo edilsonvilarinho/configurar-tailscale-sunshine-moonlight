@@ -23,7 +23,7 @@
 
 Este repositório traz um [`AGENTS.md`](AGENTS.md) — lido automaticamente por **Claude Code**,
 **Codex**, **Cursor** e outros agentes. Ele contém o procedimento executável, com verificação a
-cada passo e as travas de segurança.
+cada passo e as travas de segurança — **para host Bazzite e para host Windows**, mais o cliente.
 
 ```bash
 git clone https://github.com/edilsonvilarinho/configurar-tailscale-sunshine-moonlight.git
@@ -37,6 +37,10 @@ E peça, com estas palavras ou parecidas:
 Leia o AGENTS.md e configure este host seguindo o procedimento,
 verificando cada passo antes de seguir para o próximo.
 ```
+
+O agente identifica sozinho se a máquina é Bazzite ou Windows e segue a parte correspondente —
+a Parte A (Linux) ou a Parte B (Windows). Para configurar só o aparelho que vai receber a
+transmissão, peça a **Parte C**.
 
 <details>
 <summary><b>O que o agente faz — e o que ele não faz sem você</b></summary>
